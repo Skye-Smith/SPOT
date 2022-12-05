@@ -22,98 +22,84 @@ public class ButtonManager {
     private GpioPinDigitalInput aButton;
     private boolean aState;
 
-    
     private GpioPinDigitalInput bButton;
     private boolean bState;
 
-    /*
     private GpioPinDigitalInput soundGate;
     private boolean soundState;
-    */
 
     public ButtonManager() {
+        // Set default condition of three state variables
         aState = false;
-        
         bState = false;
-        /*
         soundState = false;
-        */
 
         gpio = GpioFactory.getInstance();
 
-        // Alter to accomodate wiring of hb sensor -------------------------------------
+        // Setup/provision three pins as input, and enable the pull-down resistor
         GpioPinDigitalInput aButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_01, PinPullResistance.PULL_DOWN);
-        
         GpioPinDigitalInput bButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02, PinPullResistance.PULL_DOWN);
-        /*
         GpioPinDigitalInput soundGate = gpio.provisionDigitalInputPin(RaspiPin.GPIO_03, PinPullResistance.PULL_DOWN);
-        */
 
         aButton.setShutdownOptions(true);
-        
         bButton.setShutdownOptions(true);
-        /*
-        soundState.setShutdownOptions(true);
-        */
+        soundGate.setShutdownOptions(true);
 
+        // Add event listeners to the three provisioned pins
         aButton.addListener(new AListener());
-        
         bButton.addListener(new BListener());
-        /*
         soundGate.addListener(new SoundListener());
-        */
     }
 
+    // Returns whether or not button A has been pressed since the last check
     public boolean getA() {
         boolean temp = aState;
         aState = false;
         return temp;
     }
 
-    
+    // Returns whether or not button B has been pressed since the last check
     public boolean getB() {
         boolean temp = bState;
         bState = false;
         return temp;
     }
 
-    /*
+    // Returns whether or not the sound sensor has been triggered since the last check
     public boolean getSound() {
         boolean temp = soundState;
         soundState = false;
         return temp;
     }
-    */
 
+    // Responds to state change events, updating the value of aState to true if the new state is "HIGH"
     private class AListener implements GpioPinListenerDigital {
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent e) {
-            if ((e.getState().toString()).equals("HIGH")) {
-                System.out.println("A High!");
+            if (e.getState().toString().equals("HIGH") && !bState) {
                 aState = true;
             }
         }
     }
 
+    // Responds to state change events, updating the value of bState to true if the new state is "HIGH"
     private class BListener implements GpioPinListenerDigital {
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent e) {
-            if (e.getState().toString().equals("HIGH")) {
-                System.out.println("B High!");
+            if (e.getState().toString().equals("HIGH") && !aState) {
                 bState = true;
             }
         }
     }
 
-    /*
+    // Responds to state change events, updating the value of soundState to true if the new state is "HIGH"
     private class SoundListener implements GpioPinListenerDigital {
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent e) {
             System.out.println("StateChange!");
-            if (e.getState().equals("HIGH")) {
+            if (e.getState().toString().equals("HIGH")) {
                 soundState = true;
             }
         }
     }
-    */
 }
