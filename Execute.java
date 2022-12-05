@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Execute {
     // ArrayList to store next sequences.
     private static ArrayList<String> seqQueue;
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         // Create window and set to fullscreen
         GraphicsDevice screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
         // String var to store filename of currently displayed image
