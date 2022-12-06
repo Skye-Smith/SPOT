@@ -19,13 +19,8 @@ import com.pi4j.io.gpio.trigger.GpioSyncStateTrigger;
 public class ButtonManager {
     private GpioController gpio;
 
-    private GpioPinDigitalInput aButton;
     private boolean aState;
-
-    private GpioPinDigitalInput bButton;
     private boolean bState;
-
-    private GpioPinDigitalInput soundGate;
     private boolean soundState;
 
     public ButtonManager() {
