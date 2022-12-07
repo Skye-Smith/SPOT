@@ -5,26 +5,22 @@ import java.util.ArrayList;
 public class Execute {
     // ArrayList to store next sequences.
     private static ArrayList<String> seqQueue;
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        // Create arraylist to store sequences
+        seqQueue = new ArrayList<String>();
+        // Define directory of soundsensor sequence
+        String soundSeqDir = "sound";
+        // Create initial queue state
+        seqQueue.add("wakeup");
+        seqQueue.add("check");
+        seqQueue.add("idle");
+
         // Create window and set to fullscreen
         GraphicsDevice screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
         // String var to store filename of currently displayed image
-        String currentSeq = "";
-        String currentImg = "";
-        Window window = new Window(currentImg);
+        Window window = new Window(seqQueue.get(0));
         screen.setFullScreenWindow(window);
 
-        // Create arraylist to store sequences
-        seqQueue = new ArrayList<String>();
-        // Sequence Start definitions
-        String soundSeqStart = "";
-        String pulseSeqStart = "";
-        // Create initial queue state
-
-        // Create Pulse and supporting variables
-        
-        int bpmWarn = 110;
-        int bpm = 0;
 
         // Create ButtonManager and supporting variables
         ButtonManager buttons = new ButtonManager();
@@ -38,31 +34,26 @@ public class Execute {
             aState = buttons.getA();
             bState = buttons.getB();
             soundState = buttons.getSound();
-            //bpm = pulse.getBPM();
 
-            // Add sound sensor sequence to queue, if it is not already queued.
-            if (soundState && !SeqSearch(soundSeqStart)) {
-                seqQueue.add(soundSeqStart);
+            // Add sound sensor sequence to queue, if it has been triggered and is not already queued.
+            if (soundState && !SeqSearch(soundSeqDir)) {
+                seqQueue.add(1, soundSeqDir);
             }
 
-            // Add heartbeat sequence to queue, if it is not already queued
-            if (bpm >= bpmWarn && !SeqSearch(pulseSeqStart)) {
-                seqQueue.add(pulseSeqStart);
-            }
-
-            // Update displayed image if button has been pressed
+            // Update displayed image, if either button has been pressed
             if (aState || bState) {
-                currentSeq = currentImg.substring(0, 1);
-                currentImg = window.nextImg(currentImg, aState, seqQueue);
+                seqQueue = window.nextImg(aState, seqQueue);
             }
+
+            Thread.sleep(100);
         }
     }
 
     // Search queue for given sequence
-    public static boolean SeqSearch(String sequence) {
+    public static boolean SeqSearch(String dir) {
         boolean found = false;
         for (int i = 0; i < seqQueue.size(); i++) {
-            if (seqQueue.get(i).equals(sequence)) {
+            if (seqQueue.get(i).equals(dir)) {
                 found = true;
                 break;
             }
